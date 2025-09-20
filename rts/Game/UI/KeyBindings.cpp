@@ -9,6 +9,7 @@
 #include "KeySet.h"
 #include "Sim/Units/UnitDef.h"
 #include "Sim/Units/UnitDefHandler.h"
+#include "System/EventHandler.h"
 #include "System/FileSystem/FileHandler.h"
 #include "System/FileSystem/SimpleParser.h"
 #include "System/Log/ILog.h"
@@ -858,7 +859,7 @@ void CKeyBindings::PushAction(const Action& action)
 	}
 }
 
-bool CKeyBindings::ExecuteCommand(const std::string& line)
+bool CKeyBindings::ExecuteCommand(const std::string& line, bool sendEvents)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
 	const std::vector<std::string> words = CSimpleParser::Tokenize(line, 2);
@@ -867,6 +868,7 @@ bool CKeyBindings::ExecuteCommand(const std::string& line)
 		return false;
 
 	const std::string command = StringToLower(words[0]);
+	bool changedKeys = true;
 
 	if (command == "keydebug") {
 		if (words.size() == 1) {
@@ -876,6 +878,7 @@ bool CKeyBindings::ExecuteCommand(const std::string& line)
 			// set
 			debugEnabled = atoi(words[1].c_str());
 		}
+		changedKeys = false; // only 'keydebug' leaves keybinds unchanged
 	}
 	else if (command == "keyload") {
 		const std::string& filename = words.size() > 1 ? words[1] : DEFAULT_FILENAME;
@@ -895,8 +898,8 @@ bool CKeyBindings::ExecuteCommand(const std::string& line)
 		if (debugEnabled)
 			LOG("[CKeyBindings::%s] line=%s", __func__, line.c_str());
 
-		ExecuteCommand("unbindall");
-		ExecuteCommand("unbind enter chat");
+		ExecuteCommand("unbindall", false);
+		ExecuteCommand("unbind enter chat", false);
 
 		if (loadStack.empty() && words.size() == 1)
 			LoadDefaults();
@@ -942,6 +945,9 @@ bool CKeyBindings::ExecuteCommand(const std::string& line)
 	if (buildHotkeyMap)
 		BuildHotkeyMap();
 
+	if (changedKeys && sendEvents)
+		eventHandler.KeyBindingsChanged();
+
 	return false;
 }
 
@@ -973,7 +979,7 @@ bool CKeyBindings::Load(const std::string& filename)
 	CSimpleParser parser(ifs);
 
 	while (!parser.Eof()) {
-		ExecuteCommand(parser.GetCleanLine());
+		ExecuteCommand(parser.GetCleanLine(), false);
 	}
 
 	loadStack.pop_back();

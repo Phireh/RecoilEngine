@@ -20,6 +20,7 @@ CallInsList = {
 	"CameraPositionChanged",
 	"CommandNotify",
 
+	"KeyBindingsChanged",
 	"KeyMapChanged",
 	"KeyPress",
 	"KeyRelease",

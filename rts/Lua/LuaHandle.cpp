@@ -3064,6 +3064,23 @@ void CLuaHandle::Pong(uint8_t pingTag, const spring_time pktSendTime, const spri
 	RunCallIn(L, cmdStr, 3, 0);
 }
 
+/*** Called when any key is bound or unbound. It is called just once for grouped binding commands
+ *
+ * @function Callins:KeyBindingsChanged
+ *
+ */
+void CLuaHandle::KeyBindingsChanged()
+{
+	RECOIL_DETAILED_TRACY_ZONE;
+	LUA_CALL_IN_CHECK(L);
+	static const LuaHashString cmdStr(__func__);
+
+	if (!cmdStr.GetGlobalFunc(L))
+		return;
+	
+	RunCallIn(L, cmdStr, 0, 0);
+}
+
 
 /*** Called when the keymap changes
  *
