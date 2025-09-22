@@ -25,6 +25,7 @@
 #include "Game/Players/PlayerHandler.h"
 #include "Sim/Misc/LosHandler.h"
 #include "Net/Protocol/NetProtocol.h"
+#include "Game/UI/KeyBindings.h"
 #include "Game/UI/KeySet.h"
 #include "Game/UI/MiniMap.h"
 #include "Rendering/GlobalRendering.h"
@@ -3067,18 +3068,36 @@ void CLuaHandle::Pong(uint8_t pingTag, const spring_time pktSendTime, const spri
 /*** Called when any key is bound or unbound. It is called just once for grouped binding commands
  *
  * @function Callins:KeyBindingsChanged
- *
+ * @actionList table with the list of all actions and their bound keys
  */
+
 void CLuaHandle::KeyBindingsChanged()
 {
 	RECOIL_DETAILED_TRACY_ZONE;
 	LUA_CALL_IN_CHECK(L);
-	static const LuaHashString cmdStr(__func__);
+	static const LuaHashString cmdStr(__
+	luaL_checkstack(L, 1, __func__);
 
 	if (!cmdStr.GetGlobalFunc(L))
 		return;
-	
-	RunCallIn(L, cmdStr, 0, 0);
+
+	// This list imitates the format of LuaUnsyncedRead::GetKeyBindings
+	ActionList actions = keyBindings.GetActionList();
+
+	int i = 1;
+	lua_createtable(L, actions.size(), 0);
+	for (const Action& action: actions) {
+		lua_createtable(L, 0, 4);
+			lua_pushsstring(L, action.command);
+			lua_pushsstring(L, action.extra);
+			lua_rawset(L, -3);
+			LuaPushNamedString(L, "command",   action.command);
+			LuaPushNamedString(L, "extra",     action.
+			LuaPushNamedString(L, "boundWith", action.boundWith);
+		lua_rawseti(L, -2, i++);
+	}
+
+	RunCallIn(L, cmdStr, 1, 0);
 }
 
 
