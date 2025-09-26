@@ -141,7 +141,7 @@ bool CGroupHandler::GroupCommand(int num)
 	return true;
 }
 
-bool CGroupHandler::GroupCommand(int num, const std::string& cmd, bool& error)
+bool CGroupHandler::GroupCommand(int num, const std::string& cmd, const std::vector<std::string>& extraArgs, bool& error)
 {
 	RECOIL_DETAILED_TRACY_ZONE;
 	error = false;
@@ -183,7 +183,13 @@ bool CGroupHandler::GroupCommand(int num, const std::string& cmd, bool& error)
 			if (group->units.empty())
 				return false;
 
-			camHandler->CameraTransition(0.5f);
+			float smoothness = 0.5f;
+                        // check for optional camera smoothness argument
+			if (extraArgs.size() > 0) {
+				smoothness = std::atof(extraArgs[0].c_str());
+			}
+
+			camHandler->CameraTransition(smoothness);
 			camHandler->GetCurrentController().SetPos(group->CalculateCenter());
 
 			return true;
