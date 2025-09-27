@@ -12,6 +12,7 @@
 #include "System/ContainerUtil.h"
 #include "System/EventHandler.h"
 #include "System/StringHash.h"
+#include "System/StringUtil.h"
 
 #include "System/Misc/TracyDefs.h"
 
@@ -186,7 +187,7 @@ bool CGroupHandler::GroupCommand(int num, const std::string& cmd, const std::vec
 			float smoothness = 0.5f;
 			// check for optional camera smoothness argument
 			if (extraArgs.size() > 0) {
-				smoothness = std::atof(extraArgs[0].c_str());
+				smoothness = StringToFloat(extraArgs[0].c_str());
 			}
 
 			camHandler->CameraTransition(smoothness);
