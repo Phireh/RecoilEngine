@@ -1296,7 +1296,7 @@ public:
 				groupId = StringToInt(args[0], &parseFailure);
 				break;
 			case 2:
-                        case 3: // NOTE: Right now GroupCommand's longest command only has 3 args
+			case 3: // NOTE: Right now GroupCommand's longest command only has 3 args
 				subCommand = args[0];
 				groupId = StringToInt(args[1], &parseFailure);
 				break;
@@ -1311,6 +1311,7 @@ public:
 		if (groupId < 0 || groupId > 9)
 			return WrongSyntax("groupId must be single digit number");
 
+		// NOTE: This only works with group commands that take exactly 1 required argument
 		std::vector<std::string> extraArgs = {};
 		for (int i = 2; i < args.size(); i++)
 			extraArgs.push_back(args[i]);
