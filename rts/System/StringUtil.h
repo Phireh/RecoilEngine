@@ -168,7 +168,7 @@ static inline float StringToFloat(const std::string& str, bool* failed = NULL)
 	const float value = (float)strtod(startPtr, &endPtr);
 
 	if (failed != NULL)
-		*failed = (endPtr != startPtr);
+		*failed = (endPtr == startPtr);
 
 	return value;
 }

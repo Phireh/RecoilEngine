@@ -187,7 +187,9 @@ bool CGroupHandler::GroupCommand(int num, const std::string& cmd, const std::vec
 			float smoothness = 0.5f;
 			// check for optional camera smoothness argument
 			if (extraArgs.size() > 0) {
-				smoothness = StringToFloat(extraArgs[0].c_str());
+				smoothness = StringToFloat(extraArgs[0].c_str(), &error);
+				if (error)
+					return false;
 			}
 
 			camHandler->CameraTransition(smoothness);
