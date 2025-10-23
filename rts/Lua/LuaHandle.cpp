@@ -3068,7 +3068,7 @@ void CLuaHandle::Pong(uint8_t pingTag, const spring_time pktSendTime, const spri
 /*** Called when any key is bound or unbound. It is called just once for grouped binding commands
  *
  * @function Callins:KeyBindingsChanged
- * @actionList table with the list of all actions and their bound keys
+ * @return KeyBinding[] currentKeybindings list of all actions and their bound keys
  */
 
 void CLuaHandle::KeyBindingsChanged()
