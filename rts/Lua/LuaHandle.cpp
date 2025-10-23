@@ -3065,7 +3065,12 @@ void CLuaHandle::Pong(uint8_t pingTag, const spring_time pktSendTime, const spri
 	RunCallIn(L, cmdStr, 3, 0);
 }
 
-/*** Called when any key is bound or unbound. It is called just once for grouped binding commands
+/*** Called when keybindings change.
+ *
+ * Called when:
+ *
+ * - An operation that changed current keybindings occurred, e.g. `bind k action`. If the operation operated on multiple keybindings, just a single event is called, at the end of it, e.g. `keyreload`.
+ * - Any operation that changes how actions are retrieved from input triggers happened, e.g. `fakemeta space`.
  *
  * @function Callins:KeyBindingsChanged
  * @return KeyBinding[] currentKeybindings list of all actions and their bound keys
